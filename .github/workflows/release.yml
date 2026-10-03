@@ -15,16 +15,22 @@ env:
   # Must match the board's CircuitPython major version (see boot_out.txt) -
   # .mpy files from another major version won't load
   CIRCUITPY_VERSION: "10.2.1"
+  # SHA-256 of that version's mpy-cross binary, so a tampered download fails
+  # the build instead of compiling the code. Changing CIRCUITPY_VERSION means
+  # updating this too: download the binary and run `shasum -a 256` on it.
+  MPY_CROSS_SHA256: "c85a9bdb3db06d8e77b600d1d025686b753448be89bb14082ee6e3a01e3c13fe"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Pinned to the commit behind v4.4.0, as a tag can be moved
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Get mpy-cross
         run: |
           curl -fsSL -o mpy-cross "https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/linux-amd64/mpy-cross-linux-amd64-${CIRCUITPY_VERSION}.static"
+          echo "${MPY_CROSS_SHA256}  mpy-cross" | sha256sum -c -
           chmod +x mpy-cross
 
       - name: Compile
