@@ -28,6 +28,8 @@
 # Every UPDATE_CHECK_SECONDS it checks for a new release, and resets the board
 # so the updater can install it.
 
+raise RuntimeError("deliberate test crash (v1.0.2) - checks the updater rolls back")
+
 import gc
 import math
 import os
