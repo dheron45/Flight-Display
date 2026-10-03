@@ -28,8 +28,6 @@
 # Every UPDATE_CHECK_SECONDS it checks for a new release, and resets the board
 # so the updater can install it.
 
-raise RuntimeError("deliberate test crash (v1.0.2) - checks the updater rolls back")
-
 import gc
 import math
 import os
@@ -172,9 +170,8 @@ GA_ALTITUDE_COLOUR=0x40D040
 # Line 3: soft periwinkle, between line 1's violet and turquoise and pale enough
 # not to clash with whichever airline colour is on line 2
 ROW_THREE_COLOUR=0x9A9CFF
-# Clock shown when there are no flights: a bright blue, as pure 0x0000FF
-# looks dim on the panel
-CLOCK_COLOUR=0x2060FF
+# Clock shown when there are no flights
+CLOCK_COLOUR=0x9A9CFF
 
 # --- Timings ---
 # Seconds to pause between scrolling one line and the next
