@@ -230,10 +230,7 @@ def check_for_update():
 
 
 def start_display():
-    try:
-        w.deinit()
-    except Exception:
-        pass  # the display sets the watchdog up again straight away anyway
+    w.mode = None  # stop the watchdog; the display sets it up again
     supervisor.set_next_code_file(APP_FILE)
     supervisor.reload()
 
