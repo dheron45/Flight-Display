@@ -1,0 +1,10 @@
+# Board-only files with WiFi passwords and your location - never commit these
+settings.toml
+secrets*.py
+
+build/
+mpy-cross
+__pycache__/
+.venv/
+.DS_Store
+._*

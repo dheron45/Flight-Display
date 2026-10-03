@@ -1,0 +1,48 @@
+# On each published release: compile src/*.py to .mpy, write manifest.json, and
+# publish them on the "dist" branch, where the board's updater fetches them from
+# https://raw.githubusercontent.com/<owner>/<repo>/dist/manifest.json
+name: Build release for the board
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:  # rebuild "dist" by hand from the Actions tab
+
+permissions:
+  contents: write
+
+env:
+  # Must match the board's CircuitPython major version (see boot_out.txt) -
+  # .mpy files from another major version won't load
+  CIRCUITPY_VERSION: "10.2.1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get mpy-cross
+        run: |
+          curl -fsSL -o mpy-cross "https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/linux-amd64/mpy-cross-linux-amd64-${CIRCUITPY_VERSION}.static"
+          chmod +x mpy-cross
+
+      - name: Compile
+        run: |
+          mkdir build
+          for f in src/*.py; do
+            ./mpy-cross "$f" -o "build/$(basename "${f%.py}").mpy"
+          done
+
+      - name: Write manifest
+        run: python3 tools/make_manifest.py build "${{ github.event.release.tag_name || github.sha }}"
+
+      - name: Publish to the dist branch
+        run: |
+          cd build
+          git init -q -b dist
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Build ${{ github.event.release.tag_name || github.sha }}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" dist
